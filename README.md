@@ -24,6 +24,7 @@ written.
 - [Permissions, and why each one](#permissions-and-why-each-one)
 - [Known limitations](#known-limitations)
 - [Development](#development)
+- [Privacy](#privacy)
 - [License](#license)
 
 ---
@@ -268,6 +269,14 @@ spread them before `assert.deepEqual`.
 
 Unit tests cover the logic. They cannot prove Chrome itself behaves as assumed —
 for that, load the extension and try it.
+
+---
+
+## Privacy
+
+Nothing is sent anywhere. No server, no account, no analytics, no network requests
+of the extension's own. What it reads, what it stores and where, and why each
+permission is needed: [PRIVACY.md](PRIVACY.md).
 
 ---
 
