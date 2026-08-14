@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Duplicate tab closed</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #202124;
+      background: #fff;
+      padding: 20px;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .icon {
+      font-size: 24px;
+      margin-bottom: 6px;
+    }
+
+    h1 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: #5f6368;
+      margin-bottom: 14px;
+    }
+
+    .closed {
+      /* Never shrinks: squeezing this box is what clipped the title and hid the
+         URL entirely in v1.2.0. Its content is bounded below instead. */
+      flex-shrink: 0;
+      padding: 10px 12px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
+
+    .closed-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 2px;
+      word-break: break-word;
+    }
+
+    .closed-url {
+      font-size: 11px;
+      color: #5f6368;
+      word-break: break-all;
+    }
+
+    /* Bound the text rather than manage overflow: two lines each is enough to
+       identify the tab, and it caps how tall this box can ever get. */
+    .closed-title,
+    .closed-url {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+    }
+
+    .actions {
+      margin-top: auto;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    button {
+      padding: 8px 18px;
+      border-radius: 8px;
+      border: 0;
+      background: #1a73e8;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1558b0;
+    }
+  </style>
+</head>
+<body>
+  <div class="icon">🗂️</div>
+  <h1>Duplicate tab closed</h1>
+  <p class="subtitle" id="subtitle"></p>
+
+  <div class="closed">
+    <div class="closed-title" id="closed-title"></div>
+    <div class="closed-url" id="closed-url"></div>
+  </div>
+
+  <div class="actions">
+    <button id="btn-dismiss">Got it</button>
+  </div>
+
+  <script src="notice.js"></script>
+</body>
+</html>

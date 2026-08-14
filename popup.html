@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Smart Tab Cap</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      width: 320px;
+      color: #202124;
+      background: #fff;
+      font-size: 13px;
+    }
+
+    /* ── Count ── */
+    .count {
+      padding: 16px;
+      border-bottom: 1px solid #f1f3f4;
+    }
+
+    .count-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .count-value {
+      font-size: 24px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .count-value .of {
+      font-size: 14px;
+      font-weight: 400;
+      color: #5f6368;
+    }
+
+    .count-label {
+      font-size: 12px;
+      color: #5f6368;
+      text-align: right;
+      line-height: 1.4;
+    }
+
+    .bar {
+      height: 6px;
+      border-radius: 3px;
+      background: #f1f3f4;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      width: 0;
+      border-radius: 3px;
+      background: #1a73e8;
+      transition: width 0.25s;
+    }
+
+    .bar-fill.near { background: #f9ab00; }
+    .bar-fill.over { background: #d93025; }
+
+    .note {
+      margin-top: 8px;
+      font-size: 12px;
+      line-height: 1.45;
+      color: #5f4300;
+      background: #fff8e1;
+      border: 1px solid #fbbc04;
+      border-radius: 6px;
+      padding: 6px 8px;
+    }
+
+    .note.hidden { display: none; }
+
+    /* ── Raise ── */
+    .raise {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 12px 16px;
+      border-bottom: 1px solid #f1f3f4;
+      color: #5f6368;
+      font-size: 12px;
+      flex-wrap: wrap;
+    }
+
+    .raise input {
+      width: 60px;
+      padding: 4px 6px;
+      border: 1px solid #dadce0;
+      border-radius: 6px;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .raise button, .history-item button {
+      padding: 4px 10px;
+      border: 1px solid #dadce0;
+      border-radius: 6px;
+      background: #fff;
+      color: #1a73e8;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .raise button:hover, .history-item button:hover { background: #f8f9fa; }
+
+    /* ── History ── */
+    .section-title {
+      padding: 12px 16px 6px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: #80868b;
+    }
+
+    #history {
+      max-height: 220px;
+      overflow-y: auto;
+      padding: 0 16px;
+    }
+
+    .history-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 0;
+      border-bottom: 1px solid #f1f3f4;
+    }
+
+    .history-item:last-child { border-bottom: none; }
+
+    .history-item img {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    .history-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .history-title {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .history-when {
+      font-size: 11px;
+      color: #80868b;
+    }
+
+    .empty {
+      padding: 4px 16px 12px;
+      font-size: 12px;
+      color: #80868b;
+    }
+
+    /* ── Footer ── */
+    footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 16px;
+      border-top: 1px solid #f1f3f4;
+    }
+
+    footer button {
+      border: none;
+      background: none;
+      color: #1a73e8;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 2px 0;
+    }
+
+    footer button:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="count">
+    <div class="count-row">
+      <div class="count-value"><span id="units">–</span><span class="of" id="of"></span></div>
+      <div class="count-label" id="scope"></div>
+    </div>
+    <div class="bar"><div class="bar-fill" id="bar"></div></div>
+    <div class="note hidden" id="note"></div>
+  </div>
+
+  <div class="raise">
+    <label for="new-limit">Raise limit to</label>
+    <input type="number" id="new-limit" min="1" step="1">
+    <button type="button" id="raise-session">session</button>
+    <button type="button" id="raise-always">always</button>
+  </div>
+
+  <div class="section-title">Closed by Smart Tab Cap</div>
+  <div id="history"></div>
+  <div class="empty" id="history-empty">Nothing closed yet.</div>
+
+  <footer>
+    <button type="button" id="open-options">All settings</button>
+    <button type="button" id="close-dupes">Close duplicates now</button>
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>

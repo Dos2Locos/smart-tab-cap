@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Smart Tab Cap</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 14px;
+      color: #202124;
+      background: #f8f9fa;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 32px 16px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 600px;
+      background: #fff;
+      border: 1px solid #dadce0;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    /* ── Header ── */
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px;
+      border-bottom: 1px solid #dadce0;
+    }
+
+    .card-header img {
+      width: 28px;
+      height: 28px;
+    }
+
+    .card-header h1 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid #dadce0;
+      padding: 0 8px;
+    }
+
+    .tab-btn {
+      padding: 11px 14px;
+      border: none;
+      border-bottom: 2px solid transparent;
+      background: none;
+      color: #5f6368;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-bottom: -1px;
+      transition: color 0.15s;
+    }
+
+    .tab-btn:hover { color: #202124; background: none; }
+
+    .tab-btn.active {
+      color: #1a73e8;
+      border-bottom-color: #1a73e8;
+      background: none;
+    }
+
+    /* ── Panel ── */
+    .panel { display: none; padding: 20px; }
+    .panel.active { display: block; }
+
+    /* ── Form elements ── */
+    /* Separators go on the top edge of every field but the first, so they never
+       depend on being the last element in the panel. `.field:last-of-type` looked
+       equivalent and was not: it matches the last div sibling, so a panel with a
+       trailing non-field div (the same-origin warning) left a dangling line. */
+    .field {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 0;
+    }
+
+    .field + .field { border-top: 1px solid #f1f3f4; }
+
+    .field-label {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .field-hint {
+      font-size: 12px;
+      color: #80868b;
+    }
+
+    /* Splits the Limits panel into what counts and what happens, so the two are
+       not read as one flat list of switches. */
+    .group-title {
+      margin-top: 18px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #dadce0;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: #80868b;
+    }
+
+    .field input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+      flex-shrink: 0;
+      accent-color: #1a73e8;
+    }
+
+    .field input[type="number"] {
+      width: 72px;
+      padding: 6px 8px;
+      border: 1px solid #dadce0;
+      border-radius: 8px;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .field select {
+      padding: 6px 8px;
+      border: 1px solid #dadce0;
+      border-radius: 8px;
+      font-size: 13px;
+      color: #202124;
+      background: #fff;
+      max-width: 220px;
+    }
+
+    .warning {
+      display: none;
+      margin-top: 12px;
+      padding: 10px 12px;
+      border: 1px solid #fbbc04;
+      border-radius: 8px;
+      background: #fff8e1;
+      color: #5f4300;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .warning.visible { display: block; }
+
+    /* ── Save footer ── */
+    #save-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 20px;
+      border-top: 1px solid #f1f3f4;
+    }
+
+    #save-area button {
+      padding: 8px 20px;
+      border: none;
+      border-radius: 8px;
+      background: #1a73e8;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    #save-area button:hover { background: #1558b0; }
+
+    #status {
+      font-size: 13px;
+      font-weight: 600;
+      color: #188038;
+    }
+
+    /* ── Domain exceptions ── */
+    .domain-add {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .domain-add input {
+      flex: 1;
+      padding: 7px 10px;
+      border: 1px solid #dadce0;
+      border-radius: 8px;
+      font-size: 13px;
+    }
+
+    .domain-add button {
+      padding: 7px 14px;
+      border: none;
+      border-radius: 8px;
+      background: #1a73e8;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .domain-add button:hover { background: #1558b0; }
+
+    .domain-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      margin: 3px;
+      background: #e8f0fe;
+      color: #1a73e8;
+      border-radius: 16px;
+      font-size: 12px;
+    }
+
+    .domain-tag button {
+      padding: 0;
+      border: none;
+      background: none;
+      color: #5f6368;
+      font-size: 15px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .domain-tag button:hover { background: none; color: #202124; }
+
+    .hint {
+      font-size: 13px;
+      color: #80868b;
+      padding: 8px 0;
+    }
+
+    /* ── History ── */
+    .history-toolbar {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 10px;
+    }
+
+    .history-toolbar button {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 8px;
+      background: #f1f3f4;
+      color: #202124;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .history-toolbar button:hover { background: #e8eaed; }
+
+    #historyList {
+      max-height: 320px;
+      overflow-y: auto;
+    }
+
+    .history-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 0;
+      border-bottom: 1px solid #f1f3f4;
+    }
+
+    .history-item:last-child { border-bottom: none; }
+
+    .history-favicon {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    .history-info {
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .history-title {
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .history-meta {
+      font-size: 11px;
+      color: #80868b;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .history-reopen {
+      flex-shrink: 0;
+      padding: 4px 10px;
+      border: none;
+      border-radius: 6px;
+      background: #f1f3f4;
+      color: #202124;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .history-reopen:hover { background: #e8eaed; }
+  </style>
+</head>
+<body>
+  <div class="card">
+
+    <div class="card-header">
+      <img src="icons/icon48.png" alt="">
+      <h1>Smart Tab Cap</h1>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="limits">Limits</button>
+      <button class="tab-btn" data-tab="duplicates">Duplicates</button>
+      <button class="tab-btn" data-tab="exceptions">Exceptions</button>
+      <button class="tab-btn" data-tab="history">History</button>
+    </div>
+
+    <form id="settings-form">
+
+      <!-- ── Limits ── -->
+      <div id="panel-limits" class="panel active">
+        <div class="field">
+          <label class="field-label" for="enableTabLimit">
+            Enable tab limit
+          </label>
+          <input type="checkbox" id="enableTabLimit" checked>
+        </div>
+        <div class="field">
+          <label class="field-label" for="maxOpenTabs">
+            Maximum tabs
+            <span class="field-hint">A collapsed tab group counts as one</span>
+          </label>
+          <input type="number" id="maxOpenTabs" min="1" max="500" step="1" value="20">
+        </div>
+        <div class="field">
+          <label class="field-label" for="applyLimitPerWindow">
+            Apply limit per window
+          </label>
+          <input type="checkbox" id="applyLimitPerWindow" checked>
+        </div>
+
+        <div class="group-title">What counts toward the limit</div>
+
+        <div class="field">
+          <label class="field-label" for="ignorePinnedTabs">
+            Don't count pinned tabs
+          </label>
+          <input type="checkbox" id="ignorePinnedTabs" checked>
+        </div>
+        <div class="field">
+          <label class="field-label" for="ignoreSystemTabs">
+            Ignore browser internal tabs
+          </label>
+          <input type="checkbox" id="ignoreSystemTabs" checked>
+        </div>
+
+        <div class="group-title">What happens when the limit is reached</div>
+
+        <div class="field">
+          <label class="field-label" for="onLimitExceeded">
+            Close
+          </label>
+          <select id="onLimitExceeded">
+            <option value="closeLeastRecentlyUsed" selected>The least recently used tab</option>
+            <option value="closeNewTab">The tab just opened</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label" for="protectAudibleTabs">
+            Never close tabs playing sound
+            <span class="field-hint">They still count toward the limit</span>
+          </label>
+          <input type="checkbox" id="protectAudibleTabs" checked>
+        </div>
+        <div class="field">
+          <label class="field-label" for="confirmBeforeClose">
+            Ask before closing
+            <span class="field-hint">Shows which tabs will be closed</span>
+          </label>
+          <input type="checkbox" id="confirmBeforeClose">
+        </div>
+
+      </div>
+
+      <!-- ── Duplicates ── -->
+      <div id="panel-duplicates" class="panel">
+        <div class="field">
+          <label class="field-label" for="enableDuplicateReuse">Reuse existing tab for duplicate URLs</label>
+          <input type="checkbox" id="enableDuplicateReuse" checked>
+        </div>
+        <div class="field">
+          <label class="field-label" for="duplicateMatchMode">
+            Match mode
+          </label>
+          <select id="duplicateMatchMode">
+            <option value="exact" selected>Exact URL</option>
+            <option value="samePath">Same domain + path</option>
+            <option value="sameOrigin">Same domain only</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label" for="ignoreHash">
+            Ignore URL fragment
+            <span class="field-hint">Treats /page and /page#section as equal</span>
+          </label>
+          <input type="checkbox" id="ignoreHash" checked>
+        </div>
+        <div class="field">
+          <label class="field-label" for="ignoreTrailingSlash">
+            Ignore trailing slash
+            <span class="field-hint">Treats /page and /page/ as equal</span>
+          </label>
+          <input type="checkbox" id="ignoreTrailingSlash" checked>
+        </div>
+        <div class="field">
+          <label class="field-label" for="ignoreTrackingParams">
+            Ignore tracking parameters
+            <span class="field-hint">utm_*, fbclid, gclid and similar</span>
+          </label>
+          <input type="checkbox" id="ignoreTrackingParams" checked>
+        </div>
+        <div id="same-origin-warning" class="warning">
+          "Same domain only" can be aggressive — opening any page on GitHub, Jira, or webmail may focus an existing tab instead of opening a new one.
+        </div>
+      </div>
+
+      <!-- ── Exceptions ── -->
+      <div id="panel-exceptions" class="panel">
+        <p class="hint" style="margin-bottom:12px">Tabs from these domains are never counted or closed. Changes here save immediately.</p>
+        <div class="domain-add">
+          <input type="text" id="domainInput" placeholder="e.g. meet.google.com" autocomplete="off">
+          <button type="button" id="btnAddDomain">Add</button>
+        </div>
+        <div id="domainList"></div>
+      </div>
+
+      <div id="save-area">
+        <button type="submit">Save</button>
+        <span id="status"></span>
+      </div>
+
+    </form>
+
+    <!-- ── History (outside form) ── -->
+    <div id="panel-history" class="panel">
+      <div class="history-toolbar">
+        <button type="button" id="btnClearHistory">Clear history</button>
+      </div>
+      <div id="historyList"></div>
+    </div>
+
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>
