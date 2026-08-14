@@ -85,4 +85,4 @@ is public and auditable.
 
 ## Contact
 
-Questions about this policy: cegomez@gmail.com
+Questions about this policy: cesar@dos2locos.es
