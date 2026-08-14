@@ -5,6 +5,8 @@ you already have open instead of opening a duplicate, and it enforces a limit on
 how many tabs you can have at once — with a confirmation you cannot ignore, and an
 undo if it takes the wrong one.
 
+[**Website**](https://dos2locos.github.io/smart-tab-cap/) · [**Download 1.9.0**](https://github.com/Dos2Locos/smart-tab-cap/releases/latest)
+
 ![The tab-limit confirmation window listing tabs to close, with checkboxes and an option to raise the limit instead](docs/screenshots/confirm-modal.png)
 
 No build step, no dependencies, no bundler. Plain JavaScript that Chrome loads as
